@@ -50,6 +50,8 @@ In this repo:
 Your project is on top of that: the Voices of the Void tree used here is ~14 GB including
 its cooked output. So plan for **~200 GB free** before you start, on a fast disk.
 
+<img width="1215" height="843" alt="image" src="https://github.com/user-attachments/assets/9eba1f78-fe4d-4e22-86a2-738c39007d75" />
+
 ---
 
 ## 1. Get access to the Unreal Engine source
@@ -625,8 +627,12 @@ Once the manual flow works, the plugin removes the ceremony: right-click a folde
 selection in the Content Browser → it cooks *just that* in the container, paks it, and copies
 the result where you want it.
 
-**Repo: <https://github.com/modestimpala/UE4-Modding-Plugins>** (`ModPackager`; use the Linux
+**Repo: <https://github.com/modestimpala/UE4-Modding-Plugins/tree/linux/ModPackager>** (`ModPackager`; use the Linux
 branch - the original targets a Windows editor).
+
+```sh
+git clone -b linux git@github.com:modestimpala/UE4-Modding-Plugins.git
+```
 
 ### What it actually does
 
