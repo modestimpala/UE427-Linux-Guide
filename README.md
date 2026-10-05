@@ -396,15 +396,24 @@ cd ~/WineResources/build
 That produces the image **`epicgames/wine-patched:11.7`** (~3.8 GB). Notes worth knowing
 before you run it:
 
-- Requires Python ≥ 3.7 and Docker Engine ≥ 23. `./build.sh --layout` renders the Dockerfile
-  without building, if you want to build elsewhere.
-- The container's non-root user defaults to **uid 1000**. If your uid is not 1000, pass
-  `--user-id=$(id -u) --group-id=$(id -g)`, otherwise every file the cook writes into your
-  bind-mounted project will be owned by the wrong user.
-- The wine prefix inside the image lives at
-  `/home/nonroot/.local/share/wineprefixes/prefix`; its `drive_c` is the mount target for
-  everything below.
-- You need to be in the `docker` group (`sudo usermod -aG docker $USER`, then re-login).
+- Requires Python ≥ 3.7, Docker Engine ≥ 23 **and the buildx plugin**. On Arch, buildx is a
+  separate package, and the daemon is not started for you:
+
+  ```sh
+  sudo pacman -S --needed docker docker-buildx
+  sudo systemctl enable --now docker
+  docker buildx version    # must print a version, not an error
+  ```
+
+- **Fully update your system first** (`sudo pacman -Syu`, nothing held back in `IgnorePkg`).
+  `build.sh` creates a Python venv, and on a partially upgraded system (e.g. a new `python`
+  with an old `expat`) pip fails with a misleading
+  `No module named 'pip._internal.operations.install.wheel'`. Run `python3 -c "import pyexpat"`
+  to see the real error.
+- You need to be in the `docker` group (`sudo usermod -aG docker $USER`). The change only
+  applies to new login sessions, and logging out isn't always enough, so reboot if
+  `id -nG` doesn't list `docker`. `sg docker ./build.sh` works in the meantime. Being in
+  `docker` is effectively root access; `sudo ./build.sh` (and `sudo docker run ...` later) avoids it.
 
 `WineResources/docs/status.md` documents which UE workloads are known to work under wine -
 worth a read before assuming a workload will behave.
@@ -697,4 +706,7 @@ iterative cooking, precise cooking, `_P` suffix and dependency inclusion.
 | `Unable to find module 'X'` and nothing builds | Binary-only project plugin; move it out of `Plugins/` (§4e). |
 | Disabled project plugin still gets compiled | UBT scans `Plugins/` regardless of `"Enabled": false` (§4e). |
 | `ld.lld: cannot open .../lib/Unix/.../libvorbisenc.a` | UE5 third-party path in a plugin's `.Build.cs`; 4.27 uses `lib/Linux` (§4d). |
+| `./build.sh` dies in pip: `No module named 'pip._internal.operations.install.wheel'` | Partial system upgrade (python newer than expat); `sudo pacman -Syu` (§5). |
+| `unknown flag: --progress`, exit status 125 | `docker-buildx` not installed (§5). |
+| `permission denied while trying to connect to the docker API at unix:///var/run/docker.sock` | Current session isn't in the `docker` group yet; reboot or use `sg docker` (§5). |
 
