@@ -100,6 +100,24 @@ Result: `Engine/Binaries/Linux/UE4Editor`. Launch a project with:
 ~/UnrealEngine427Src/Engine/Binaries/Linux/UE4Editor 
 ```
 
+### Editor crashes with an OpenComposite error
+
+If startup shows `OpenComposite DLLMain ERROR: Cannot init VR: Already running!`,
+followed by `SIGABRT`, launch the editor with `-nohmd`:
+
+```sh
+~/UnrealEngine427Src/Engine/Binaries/Linux/UE4Editor -nohmd
+```
+
+Or open your project directly:
+
+```sh
+~/UnrealEngine427Src/Engine/Binaries/Linux/UE4Editor \
+    "/path/to/MyProject.uproject" -nohmd
+```
+
+`-nohmd` bypasses headset/XR initialization.
+
 ### Project plugins must exist for Linux
 
 A Blueprint-only project needs no game module, but every **C++ plugin** it enables needs a
@@ -709,4 +727,5 @@ iterative cooking, precise cooking, `_P` suffix and dependency inclusion.
 | `./build.sh` dies in pip: `No module named 'pip._internal.operations.install.wheel'` | Partial system upgrade (python newer than expat); `sudo pacman -Syu` (§5). |
 | `unknown flag: --progress`, exit status 125 | `docker-buildx` not installed (§5). |
 | `permission denied while trying to connect to the docker API at unix:///var/run/docker.sock` | Current session isn't in the `docker` group yet; reboot or use `sg docker` (§5). |
+| Native editor crashes: OpenComposite `Cannot init VR: Already running!`, then `SIGABRT` | Duplicate OpenComposite initialization during VR startup; launch the editor with `-nohmd` (§2). |
 
